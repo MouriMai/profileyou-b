@@ -1,24 +1,75 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  ChakraProvider,
+  Heading,
+  Container,
+  Text,
+  Link,
+  Wrap,
+  Input,
+  Stack,
+  Button,
+  Image,
+  SkeletonCircle,
+  SkeletonText
 
-function App() {
+}
+from "@chakra-ui/react"
+import axios from "axios";
+import { useState } from "react";
+import Keywords from "./components/Keywords";
+
+const App = () => {
+  const [image, updateImage] = useState();
+  const [prompt, updatePrompt] = useState();
+  const [loading, updateLoading] = useState();
+
+  const generate = async (prompt) => {
+    updateLoading(true);
+    const result = await axios.get(`http://127.0.0.1:8000/?prompt=${prompt}`);
+    updateImage(result.data);
+    updateLoading(false);
+  };
+
   return (
+    <ChakraProvider>
+      <Container>
+      <Heading>Profile You🚀</Heading>
+        <Text marginBottom={"10px"}>
+          This application examines the trend of the given word in Twitter to generate images
+           using the Dall・E API. More information can be found here{" "}
+          <Link href={"#"}>
+             Web
+          </Link>
+        </Text>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      Profile You!
     </div>
+    <Wrap marginBottom={"10px"}>
+          <Input
+            value={prompt}
+            onChange={(e) => updatePrompt(e.target.value)}
+            width={"350px"}
+          ></Input>
+          <Button onClick={(e) => generate(prompt)} colorScheme={"yellow"}>
+            Generate
+          </Button>
+        </Wrap>
+
+        {loading ? (
+          <Stack>
+            <SkeletonCircle />
+            <SkeletonText />
+          </Stack>
+        ) : image ? (
+          <Image src={`data:image/png;base64,${image}`} boxShadow="lg" />
+        ) : null}
+
+        <pre>{JSON.stringify(prompt)}</pre>
+
+        <Keywords />
+
+    </Container>
+    </ChakraProvider>
   );
 }
 
