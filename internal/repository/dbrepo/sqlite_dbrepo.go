@@ -3,12 +3,14 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"profileyou/api/models"
 	"time"
+
+	sqlite "profileyou/api/config/database"
 )
 
 type SQliteDBRepo struct {
+	// It holds our connection to the database
 	DB *sql.DB
 }
 
@@ -21,55 +23,59 @@ func (m *SQliteDBRepo) Connection() *sql.DB {
 
 // AllMovies returns a slice of movies, sorted by name. If the optional parameter genre
 // is supplied, then only all movies for a particular genre is returned.
-func (m *SQliteDBRepo) AllKeywords(genre ...int) ([]*models.Keyword, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
+func (m *SQliteDBRepo) AllKeywords() ([]*models.Keyword, error) {
+	// ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	// defer cancel()
 
-	where := ""
-	if len(genre) > 0 {
-		// where = fmt.Sprintf("where id in (select movie_id from movies_genres where genre_id = %d)", genre[0])
-		where = fmt.Sprintf("keywords")
-	}
+	db := sqlite.New()
+	// where := ""
+	// if len(genre) > 0 {
+	// 	// where = fmt.Sprintf("where id in (select movie_id from movies_genres where genre_id = %d)", genre[0])
+	// 	where = fmt.Sprintf("keywords")
+	// }
 
-	query := fmt.Sprintf(`
-		select
-			id, word, description, coalesce(image_url, ''),
-			created_at, updated_at
-		from
-			keywords %s
-		order by
-			created_at
-	`, where)
+	// query := `
+	// 	select
+	// 		id, word, description, coalesce(image_url, ''),
+	// 		created_at, updated_at, deleted_at
+	// 	from
+	// 		keywords
+	// 	order by
+	// 		created_at
+	// `
 
-	rows, err := m.DB.QueryContext(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+	// rows, err := m.DB.QueryContext(ctx, query)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer rows.Close()
 
 	var keywords []*models.Keyword
 
-	for rows.Next() {
-		var keyword models.Keyword
-		err := rows.Scan(
-			&keyword.ID,
-			&keyword.Word,
-			&keyword.Description,
-			&keyword.ImageUrl,
-			&keyword.CreatedAt,
-			&keyword.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
+	db.Find(&keywords)
 
-		keywords = append(keywords, &keyword)
-	}
+	// for rows.Next() {
+	// 	var keyword models.Keyword
+	// 	err := rows.Scan(
+	// 		&keyword.ID,
+	// 		&keyword.Word,
+	// 		&keyword.Description,
+	// 		&keyword.ImageUrl,
+	// 		&keyword.CreatedAt,
+	// 		&keyword.UpdatedAt,
+	// 		&keyword.DeletedAt,
+	// 	)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	keywords = append(keywords, &keyword)
+	// }
 
 	return keywords, nil
 }
 
-func (m *SQliteDBRepo) OneMovie(id int) (*models.Keyword, error) {
+func (m *SQliteDBRepo) GetKeyword(id int) (*models.Keyword, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 

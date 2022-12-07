@@ -16,8 +16,8 @@ const Keywords = () => {
         fetch(`http://localhost:8080/keywords`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
-                console.log(data.lists);
-                setKeywords(data.lists);
+                console.log(data);
+                setKeywords(data);
             })
             .catch(err => {
                 console.log(err);
@@ -27,7 +27,7 @@ const Keywords = () => {
 
     return(
         <div>
-            <h2>Keywords</h2>
+            <h2>📘  Keywords History</h2>
             <hr />
             <table className="table table-striped table-hover">
                 <thead>
@@ -38,15 +38,23 @@ const Keywords = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {keywords.map((k) => (
-                        <tr key={k.Word}>
+                    {keywords.map((k, index) => (
+                        <tr key={index}>
                             <td>{k.Word}
-                                <Link to={`/keywords/${k.ID}`}>
+                               {/* <Link to={`/keywords/${k.ID}`}>
                                     {k.word}
-                                </Link>
+                                </Link> */}
                             </td>
                             <td>{k.Description}</td>
-                            <td>{k.Image_url}</td>
+                            <td>
+                            {k.ImageUrl !== "" &&
+                                <div className="mb-3">
+                                    <img src={`https://image.tmdb.org/t/p/w200/${k.ImageUrl}`} alt="image" />
+                                </div>
+                            }
+
+                            </td>
+                            <td>{k.CreatedAt}</td>
                         </tr>    
                     ))}
                 </tbody>
