@@ -61,7 +61,7 @@ func GetKeyword(c *gin.Context) {
 
 }
 
-func NewCustomerController(kr repository.KeywordRepository) keywordController {
+func NewKeywordController(kr repository.KeywordRepository) keywordController {
 	return keywordController{
 		keywordRepository: kr,
 	}
@@ -69,19 +69,20 @@ func NewCustomerController(kr repository.KeywordRepository) keywordController {
 }
 
 func (ku *keywordController) Index(c *gin.Context) {
-	customers := ku.keywordRepository.GetKeywords()
-	c.HTML(200, "index.html", gin.H{"customers": customers})
+	keywords := ku.keywordRepository.GetKeywords()
+	c.HTML(200, "index.html", gin.H{"keywords": keywords})
 }
 
-func (ku *keywordController) DetailCustomer(c *gin.Context) {
+func (ku *keywordController) DetailKeyword(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	customer := ku.keywordRepository.GetKeyword(id)
-	c.HTML(200, "detail.html", gin.H{"customer": customer})
+	keyword := ku.keywordRepository.GetKeyword(id)
+	c.HTML(200, "detail.html", gin.H{"keyword": keyword})
 }
 
 func (ku *keywordController) CreateKeyword(c *gin.Context) {
-	word := c.PostForm("word")
+	word := c.Param("word")
+	fmt.Printf("Receive a post: %s", word)
 	// age, _ := strconv.Atoi(c.PostForm("age"))
 
 	keyword := model.Keyword{Word: word}

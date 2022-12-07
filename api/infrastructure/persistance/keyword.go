@@ -11,7 +11,7 @@ type keywordPersistance struct {
 	Conn *gorm.DB
 }
 
-func NewCustomerPersistance(conn *gorm.DB) repository.KeywordRepository {
+func NewKeywordPersistance(conn *gorm.DB) repository.KeywordRepository {
 	return &keywordPersistance{Conn: conn}
 }
 

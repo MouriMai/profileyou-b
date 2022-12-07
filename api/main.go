@@ -6,7 +6,7 @@ import (
 
 	sqlite "profileyou/api/config/database"
 	controllers "profileyou/api/controllers"
-	"profileyou/api/models"
+	"profileyou/api/infrastructure/persistance"
 	"profileyou/internal/repository"
 	"profileyou/internal/repository/dbrepo"
 
@@ -29,20 +29,16 @@ type application struct {
 	router       *gin.Engine
 }
 
-func newWord(c *gin.Context) {
-
-}
-
 func main() {
 	// set application config
 	var app application
 
 	// connect to the database
-	// <old>conn, err := app.connectToDB()
 	db := sqlite.New()
 
-	db.Create(&models.Keyword{Word: "クリスマス", Description: "", ImageUrl: "test"})
-	db.Create(&models.Keyword{Word: "お正月", Description: "", ImageUrl: "test"})
+	// Seed datas
+	// db.Create(&models.Keyword{Word: "クリスマス", Description: "", ImageUrl: "test"})
+	// db.Create(&models.Keyword{Word: "お正月", Description: "", ImageUrl: "test"})
 
 	connect, err := db.DB()
 	if err != nil {
@@ -51,7 +47,8 @@ func main() {
 	app.DB = &dbrepo.SQliteDBRepo{DB: connect}
 	defer app.DB.Connection().Close()
 
-	keywordController := controller.NewKeywordController(keywordRepository)
+	keywordRepository := persistance.NewKeywordPersistance(db)
+	keywordController := controllers.NewKeywordController(keywordRepository)
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
@@ -80,20 +77,19 @@ func main() {
 		MaxAge: 24 * time.Hour,
 	}))
 
-	r.GET("/message", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello world",
-		})
-	})
-
 	// list all the keywords
 	r.GET("/keywords", controllers.GetAllKeywordsGin)
 	// list one keyword
 	r.GET("/keywords/:id", controllers.GetKeyword)
 	// create a new keyword
-	r.POST("/customer/create", controllers.CreateKeyword)
-	r.POST("/customer/update", controllers.UpdateKeyword)
-	r.POST("/customer/delete", controllers.DeleteKeyword)
+	r.POST("/keyword/create/:word", keywordController.CreateKeyword)
+	r.POST("/keyword/update", keywordController.UpdateKeyword)
+	r.POST("/keyword/delete", keywordController.DeleteKeyword)
+	r.GET("/message", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Hello world",
+		})
+	})
 	r.Run()
 
 }

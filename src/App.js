@@ -13,7 +13,7 @@ import {
   SkeletonText
 
 }
-from "@chakra-ui/react"
+  from "@chakra-ui/react"
 import axios from "axios";
 import { useState } from "react";
 import Keywords from "./components/Keywords";
@@ -25,7 +25,9 @@ const App = () => {
 
   const generate = async (prompt) => {
     updateLoading(true);
-    const result = await axios.get(`http://127.0.0.1:8000/?prompt=${prompt}`);
+    const request = await axios.post(`http://localhost:8080/keyword/create/${prompt}`);
+    const result = await axios.get(`http://localhost:8080/keyword/create/${prompt}`);
+    console.log(result, request);
     updateImage(result.data);
     updateLoading(false);
   };
@@ -33,18 +35,18 @@ const App = () => {
   return (
     <ChakraProvider>
       <Container>
-      <Heading>Profile You🚀</Heading>
+        <Heading>Profile You🚀</Heading>
         <Text marginBottom={"10px"}>
           This application examines the trend of the given word in Twitter to generate images
-           using the Dall・E API. More information can be found here{" "}
+          using the Dall・E API. More information can be found here{" "}
           <Link href={"#"}>
-             Web
+            Web
           </Link>
         </Text>
-    <div className="App">
-      Profile You!
-    </div>
-    <Wrap marginBottom={"10px"}>
+        <div className="App">
+          Profile You!
+        </div>
+        <Wrap marginBottom={"10px"}>
           <Input
             value={prompt}
             onChange={(e) => updatePrompt(e.target.value)}
@@ -68,7 +70,7 @@ const App = () => {
 
         <Keywords />
 
-    </Container>
+      </Container>
     </ChakraProvider>
   );
 }

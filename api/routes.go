@@ -1,12 +1,20 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 // func (app *application) routes() http.Handler {
 func (app *application) routes() {
 	r := gin.Default()
 
-	r.GET("/keywords", app.GetAllKeywordsGin)
+	r.GET("/keywords", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Hello world",
+		})
+	})
 
 	// create a router mux
 	// mux := chi.NewRouter()
@@ -38,5 +46,5 @@ func (app *application) routes() {
 	// mux.Delete("/movies/{id}", app.DeleteMovie)
 	// })
 
-	return mux
+	// return mux
 }
