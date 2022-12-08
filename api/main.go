@@ -26,7 +26,6 @@ type application struct {
 	JWTAudience  string
 	CookieDomain string
 	APIKey       string
-	router       *gin.Engine
 }
 
 func main() {
@@ -61,6 +60,7 @@ func main() {
 			"POST",
 			"GET",
 			"OPTIONS",
+			"DELETE",
 		},
 		// 許可したいHTTPリクエストヘッダ
 		AllowHeaders: []string{
@@ -77,6 +77,7 @@ func main() {
 		MaxAge: 24 * time.Hour,
 	}))
 
+	r.GET("/", controllers.GetAllKeywordsGin)
 	// list all the keywords
 	r.GET("/keywords", controllers.GetAllKeywordsGin)
 	// list one keyword
@@ -84,7 +85,7 @@ func main() {
 	// create a new keyword
 	r.POST("/keyword/create/:word", keywordController.CreateKeyword)
 	r.POST("/keyword/update", keywordController.UpdateKeyword)
-	r.POST("/keyword/delete", keywordController.DeleteKeyword)
+	r.DELETE("/keyword/delete/:id", keywordController.DeleteKeyword)
 	r.GET("/message", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello world",

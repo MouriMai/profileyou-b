@@ -22,6 +22,11 @@ const App = () => {
   const [image, updateImage] = useState();
   const [prompt, updatePrompt] = useState();
   const [loading, updateLoading] = useState();
+  const [keywords, updateKeywords] = useState();
+
+  const addKeywordHandler = keyword => {
+    updateKeywords([keyword, ...keywords])
+  }
 
   const generate = async (prompt) => {
     updateLoading(true);

@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
+import { Button } from "@chakra-ui/react";
+import Swal from "sweetalert2";
+import axios from 'axios'
 
-const Keywords = () => {
+const Keywords = (props) => {
+  // const navigate = useNavigate();
   const [keywords, setKeywords] = useState([]);
 
   useEffect(() => {
@@ -24,6 +29,60 @@ const Keywords = () => {
       })
 
   }, []);
+
+const confirmDelete = (id) => {
+  const url = `http://localhost:8080/keyword/delete/${id}`
+
+    Swal.fire({
+        title: 'Delete keyword?',
+        text: "You cannot undo this action!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+            // axios.delete(url)
+            // .then(res => {
+            //   const keywords = this.state.keywords.filter(keyword => keyword.id !== id);
+
+            //   console.log("Delete from react:");
+            //   setKeywords({keywords})
+
+            //   console.log(res.data);
+            // })
+
+            let headers = new Headers();
+            // headers.append("Authorization", "Bearer " + jwtToken)
+
+            const requestOptions = {
+                method: "DELETE",
+                headers: headers,
+            }
+
+            console.log("Fetch starting!");
+            const url = `http://localhost:8080/keyword/delete/${id}`
+            console.log(url);
+          fetch(`keyword/delete/${id}`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                  console.log("Something's Error");
+                  console.log(data.error);
+                } else {
+                  console.log("Finish");
+                  setKeywords(data);
+                    // navigate("/keywords");
+                }
+            })
+            .catch(err => {
+              console.log("Error was caught:");
+              console.log(err)
+            });
+        }
+      })
+  }
 
   return (
     <div>
@@ -49,12 +108,16 @@ const Keywords = () => {
               <td>
                 {k.ImageUrl !== "" &&
                   <div className="mb-3">
-                    <img src={`https://image.tmdb.org/t/p/w200/${k.ImageUrl}`} alt="generated-img" />
+                    {/* <img src={`${k.ImageUrl}`} alt="generated-img" /> */}
+                    <img src={`https://res.cloudinary.com/dokzsbu2v/image/upload/v1670479204/development/images_xa8j85.png`} alt="generated-img" />
                   </div>
                 }
 
               </td>
               <td>{k.CreatedAt}</td>
+              <td><Button onClick={() => confirmDelete(k.ID)} colorScheme={"gray"}  variant={"outline"}>
+            🗑️ Delete
+          </Button></td>
             </tr>
           ))}
         </tbody>

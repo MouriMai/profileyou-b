@@ -28,7 +28,7 @@ func GetAllKeywordsGin(c *gin.Context) {
 
 	var keywords []models.Keyword
 	db.Find(&keywords)
-	fmt.Println(&keywords)
+	// fmt.Println(&keywords)
 	connect.Close()
 
 	if err != nil {
@@ -108,9 +108,10 @@ func (ku *keywordController) UpdateKeyword(c *gin.Context) {
 }
 
 func (ku *keywordController) DeleteKeyword(c *gin.Context) {
-	id, _ := strconv.Atoi(c.PostForm("id"))
-
+	id, _ := strconv.Atoi(c.Param("id"))
+	fmt.Printf("Deleting a id: %d", id)
 	keyword := ku.keywordRepository.GetKeyword(id)
+	fmt.Printf("Deleting a id: %s", keyword.Word)
 
 	ku.keywordRepository.Delete(keyword)
 
