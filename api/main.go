@@ -15,7 +15,7 @@ import (
 	// "gorm.io/driver/sqlite"
 )
 
-const port = 8080
+// const port = 8080
 
 type application struct {
 	DSN          string

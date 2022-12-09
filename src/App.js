@@ -18,6 +18,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import Keywords from "./components/Keywords";
+import React from "react";
 
 
 const App = () => {
@@ -51,7 +52,6 @@ const App = () => {
 
   // DELETE
   function confirmDelete(id) {
-    const url = `http://localhost:8080/keyword/delete/${id}`;
 
     Swal.fire({
       title: 'Delete keyword?',
@@ -76,10 +76,9 @@ const App = () => {
           method: "DELETE",
           headers: headers,
         };
-
+        
         const url = `http://localhost:8080/keyword/delete/${id}`;
-        console.log(url);
-        fetch(`/keyword/delete/${id}`, requestOptions)
+        fetch(url, requestOptions)
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
@@ -100,24 +99,31 @@ const App = () => {
   }
     // FINISH DELETE
 
-
-  const addKeywordHandler = (keyword) => {
-    // event.preventDefault()
-    console.log(keywords);
-    setKeywords([...keywords, keyword]);
-    console.log(keyword);
-  };
-
   const generate = async (prompt) => {
-    addKeywordHandler(prompt)
     updateLoading(true);
-    const request = await axios.post(`http://localhost:8080/keyword/create/${prompt}`);
+    // const request = await axios.post(`http://localhost:8080/keyword/create/${prompt}`);
     // const result = await axios.get(`http://localhost:8080/keyword/create/${prompt}`);
-    console.log(request);
-    // console.log(result);
     // updateImage(result.data);
+    let headers = new Headers();
+        // headers.append("Authorization", "Bearer " + jwtToken)
+        const requestOptions = {
+          method: "POST",
+          headers: headers,
+        };
+
+        const url = `http://localhost:8080/keyword/create/${prompt}`;
+        fetch(url, requestOptions)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              console.log(data.error);
+            } else {
+              setKeywords(data);
+            }
+          })
     updateLoading(false);
   };
+
 
   return (
     <ChakraProvider>
