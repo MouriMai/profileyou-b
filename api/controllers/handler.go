@@ -92,24 +92,25 @@ func (ku *keywordController) CreateKeyword(c *gin.Context) {
 }
 
 func (ku *keywordController) UpdateKeyword(c *gin.Context) {
-	id, _ := strconv.Atoi(c.PostForm("id"))
-
+	id, _ := strconv.Atoi(c.Param("id"))
+	fmt.Printf("Updating a keyword id: %d", id)
 	keyword := ku.keywordRepository.GetKeyword(id)
 
-	word := c.PostForm("word")
-	description := c.PostForm("description")
+	word := c.Param("word")
+	description := c.Param("description")
 	// age, _ := strconv.Atoi(c.PostForm("age"))
 
 	keyword.Word = word
 	keyword.Description = description
 	ku.keywordRepository.Update(keyword)
 
-	c.Redirect(301, "/")
+	c.IndentedJSON(http.StatusOK, keyword)
+	// c.Redirect(301, "/")
 }
 
 func (ku *keywordController) DeleteKeyword(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	fmt.Printf("Deleting a id: %d", id)
+	fmt.Printf("Deleting a keyword id: %d", id)
 	keyword := ku.keywordRepository.GetKeyword(id)
 
 	ku.keywordRepository.Delete(keyword)

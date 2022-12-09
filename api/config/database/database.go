@@ -18,6 +18,10 @@ func New() *gorm.DB {
 		panic("failed to connect database")
 	}
 
+	// Seed datas
+	// db.Create(&models.Keyword{Word: "クリスマス", Description: "", ImageUrl: "test"})
+	// db.Create(&models.Keyword{Word: "お正月", Description: "", ImageUrl: "test"})
+
 	db.AutoMigrate(&Keyword{})
 
 	return db

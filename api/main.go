@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	sqlite "profileyou/api/config/database"
@@ -34,10 +38,6 @@ func main() {
 
 	// connect to the database
 	db := sqlite.New()
-
-	// Seed datas
-	// db.Create(&models.Keyword{Word: "クリスマス", Description: "", ImageUrl: "test"})
-	// db.Create(&models.Keyword{Word: "お正月", Description: "", ImageUrl: "test"})
 
 	connect, err := db.DB()
 	if err != nil {
@@ -77,6 +77,20 @@ func main() {
 		MaxAge: 24 * time.Hour,
 	}))
 
+	// Shell CommandからPython実行
+	// sentence := '"a cute dog"'
+	command_line := "python3 api/create.py 'a cute dog'"
+	// command_line := "python3 api/api.py test attr"
+	command := strings.Fields(command_line)
+	shell := os.Getenv("SHELL")
+	status, output := getstatusoutput(command...)
+	fmt.Printf("--- Result ---------------\n")
+	fmt.Printf("Shell        : %s\n", shell)
+	fmt.Printf("Command      : %s\n", command)
+	fmt.Printf("StatusCode   : %d\n", status)
+	fmt.Printf("ResultMessage: %s\n", output)
+	fmt.Printf("--------------------------\n")
+
 	r.GET("/", controllers.GetAllKeywordsGin)
 	// list all the keywords
 	r.GET("/keywords", controllers.GetAllKeywordsGin)
@@ -84,7 +98,7 @@ func main() {
 	r.GET("/keywords/:id", controllers.GetKeyword)
 	// create a new keyword
 	r.POST("/keyword/create/:word", keywordController.CreateKeyword)
-	r.POST("/keyword/update", keywordController.UpdateKeyword)
+	r.POST("/keyword/update/:id", keywordController.UpdateKeyword)
 	r.DELETE("/keyword/delete/:id", keywordController.DeleteKeyword)
 	r.GET("/message", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -93,4 +107,22 @@ func main() {
 	})
 	r.Run()
 
+	// out, err := exec.Command("/bin/bash", "python3 api/api.py").Output()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(string(out))
+
+}
+
+func getstatusoutput(args ...string) (status int, output string) {
+	exec_command := exec.Command(args[0], args[1:]...)
+	std_out, std_err := exec_command.Output()
+	status = exec_command.ProcessState.ExitCode()
+	if std_err != nil {
+		output = std_err.Error()
+	} else {
+		output = string(std_out)
+	}
+	return
 }
