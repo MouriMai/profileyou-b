@@ -111,11 +111,12 @@ func (ku *keywordController) DeleteKeyword(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	fmt.Printf("Deleting a id: %d", id)
 	keyword := ku.keywordRepository.GetKeyword(id)
-	fmt.Printf("Deleting a id: %s", keyword.Word)
 
 	ku.keywordRepository.Delete(keyword)
 
-	c.Redirect(301, "/")
+	c.IndentedJSON(http.StatusOK, keyword)
+
+	// c.Redirect(302, "/")
 }
 
 // func (app *application) GetAllKeywords(w http.ResponseWriter, r *http.Request) {

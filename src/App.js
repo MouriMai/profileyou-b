@@ -78,20 +78,19 @@ const App = () => {
         };
         
         const url = `http://localhost:8080/keyword/delete/${id}`;
+        
         fetch(url, requestOptions)
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
-              console.log("Something's Error");
               console.log(data.error);
             } else {
-              console.log("Finish");
-              setKeywords(data);
+              setKeywords((keywords) => keywords.filter((keyword) => keyword.ID !== id));
+              console.log(`${data.Word} Deleted`);
               // navigate("/keywords");
             }
           })
           .catch(err => {
-            console.log("Error was caught:");
             console.log(err);
           });
       }
