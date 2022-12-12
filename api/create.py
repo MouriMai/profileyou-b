@@ -10,7 +10,7 @@ print(args[1])
 
 url = "https://api.openai.com/v1/images/generations"
 
-OPENAI_API_KEY="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"
+OPENAI_API_KEY="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"
 
 payload = {
   "prompt": args[1],

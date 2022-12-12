@@ -5,9 +5,9 @@ import (
 )
 
 type KeywordRepository interface {
-	GetKeyword(id int) model.Keyword
-	GetKeywords() []model.Keyword
-	Create(k model.Keyword)
-	Update(k model.Keyword)
-	Delete(k model.Keyword)
+	GetKeyword(id int) (result *model.Keyword, err error)
+	GetKeywords() (result []model.Keyword, err error)
+	Create(k model.Keyword) error
+	Update(k model.Keyword) error
+	Delete(k model.Keyword) error
 }

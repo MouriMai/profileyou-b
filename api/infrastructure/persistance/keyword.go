@@ -11,41 +11,49 @@ type keywordPersistance struct {
 	Conn *gorm.DB
 }
 
-func NewKeywordPersistance(conn *gorm.DB) repository.KeywordRepository {
+func NewKeywordPersistance(conn *gorm.DB, k repository.KeywordRepository) *keywordPersistance {
 	return &keywordPersistance{Conn: conn}
 }
 
-func (kr *keywordPersistance) GetKeyword(id int) model.Keyword {
+func (kr *keywordPersistance) GetKeyword(id int) (result *model.Keyword, err error) {
 
 	var keyword model.Keyword
-	kr.Conn.First(&keyword, id)
+	if result := kr.Conn.First(&keyword, id); result.Error != nil {
+		err := result.Error
+		return nil, err
+	}
 
-	return keyword
+	return &keyword, nil
 
 }
 
-func (kr *keywordPersistance) GetKeywords() []model.Keyword {
+func (kr *keywordPersistance) GetKeywords() (result []model.Keyword, err error) {
 
 	var keywords []model.Keyword
-	kr.Conn.Find(&keywords)
 
-	return keywords
+	if result := kr.Conn.Find(&keywords); result.Error != nil {
+		err := result.Error
+		return nil, err
+	}
+
+	return keywords, nil
 }
 
-func (kr *keywordPersistance) Create(k model.Keyword) {
+func (kr *keywordPersistance) Create(k model.Keyword) error {
 
 	kr.Conn.Create(&k)
-
+	return nil
 }
 
-func (kr *keywordPersistance) Update(k model.Keyword) {
+func (kr *keywordPersistance) Update(k model.Keyword) error {
 
 	kr.Conn.Save(&k)
+	return nil
 
 }
 
-func (kr *keywordPersistance) Delete(k model.Keyword) {
+func (kr *keywordPersistance) Delete(k model.Keyword) error {
 
 	kr.Conn.Delete(&k)
-
+	return nil
 }

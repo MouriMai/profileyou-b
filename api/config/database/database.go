@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -25,4 +26,8 @@ func New() *gorm.DB {
 	db.AutoMigrate(&Keyword{})
 
 	return db
+}
+
+func errorResponse(err error) gin.H {
+	return gin.H{"error": err.Error()}
 }

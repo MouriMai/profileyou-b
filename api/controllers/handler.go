@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	sqlite "profileyou/api/config/database"
 	"profileyou/api/domain/model"
 	"profileyou/api/domain/repository"
-	models "profileyou/api/models"
+	"profileyou/api/utils/errors"
 
 	"github.com/gin-gonic/gin"
 	// "gorm.io/driver/sqlite"
@@ -18,44 +17,33 @@ type keywordController struct {
 	keywordRepository repository.KeywordRepository
 }
 
-func GetAllKeywordsGin(c *gin.Context) {
-	db := sqlite.New()
-
-	connect, err := db.DB()
+func (ku *keywordController) GetAllKeywordsGin(c *gin.Context) {
+	keywords, err := ku.keywordRepository.GetKeywords()
 	if err != nil {
-		panic(err)
-	}
-
-	var keywords []models.Keyword
-	db.Find(&keywords)
-	// fmt.Println(&keywords)
-	connect.Close()
-
-	if err != nil {
-		fmt.Println(err.Error())
-		c.IndentedJSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		fmt.Println(err)
+		apiErr := errors.NewBadRequestError("Bad Request")
+		c.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}
-
 	c.IndentedJSON(http.StatusOK, keywords)
 }
 
-func GetKeyword(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-
-	db := sqlite.New()
-
-	connect, err := db.DB()
+func (ku *keywordController) GetKeyword(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		panic(err)
+		apiErr := errors.NewBadRequestError("Bad Request")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
 	}
 
-	var keyword models.Keyword
-	db.First(&keyword, id)
-
-	connect.Close()
+	keyword, err := ku.keywordRepository.GetKeyword(id)
+	if err != nil {
+		fmt.Printf("Error %v", err)
+		// c.JSON(http.StatusNotFound, errorResponse(err))
+		apiErr := errors.NotFoundError("Not found")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
 
 	c.IndentedJSON(http.StatusOK, keyword)
 
@@ -69,15 +57,31 @@ func NewKeywordController(kr repository.KeywordRepository) keywordController {
 }
 
 func (ku *keywordController) Index(c *gin.Context) {
-	keywords := ku.keywordRepository.GetKeywords()
-	c.HTML(200, "index.html", gin.H{"keywords": keywords})
+	keywords, err := ku.keywordRepository.GetKeywords()
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.NewBadRequestError("Bad Request")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, keywords)
 }
 
 func (ku *keywordController) DetailKeyword(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	keyword := ku.keywordRepository.GetKeyword(id)
-	c.HTML(200, "detail.html", gin.H{"keyword": keyword})
+	keyword, err := ku.keywordRepository.GetKeyword(id)
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.NotFoundError("Not found")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, keyword)
 }
 
 func (ku *keywordController) CreateKeyword(c *gin.Context) {
@@ -86,7 +90,13 @@ func (ku *keywordController) CreateKeyword(c *gin.Context) {
 	// age, _ := strconv.Atoi(c.PostForm("age"))
 
 	keyword := model.Keyword{Word: word}
-	ku.keywordRepository.Create(keyword)
+	err := ku.keywordRepository.Create(keyword)
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.InternalSeverError("Server Error")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
 
 	c.Redirect(301, "/")
 }
@@ -94,7 +104,13 @@ func (ku *keywordController) CreateKeyword(c *gin.Context) {
 func (ku *keywordController) UpdateKeyword(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	fmt.Printf("Updating a keyword id: %d", id)
-	keyword := ku.keywordRepository.GetKeyword(id)
+	keyword, err := ku.keywordRepository.GetKeyword(id)
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.NotFoundError("Not found")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
 
 	word := c.Param("word")
 	description := c.Param("description")
@@ -102,18 +118,39 @@ func (ku *keywordController) UpdateKeyword(c *gin.Context) {
 
 	keyword.Word = word
 	keyword.Description = description
-	ku.keywordRepository.Update(keyword)
+	err = ku.keywordRepository.Update(*keyword)
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.InternalSeverError("Server Error")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
 
 	c.IndentedJSON(http.StatusOK, keyword)
-	// c.Redirect(301, "/")
 }
 
 func (ku *keywordController) DeleteKeyword(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	fmt.Printf("Deleting a keyword id: %d", id)
-	keyword := ku.keywordRepository.GetKeyword(id)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.NewBadRequestError("Bad request")
+		c.IndentedJSON(apiErr.Status, apiErr)
+	}
 
-	ku.keywordRepository.Delete(keyword)
+	keyword, err := ku.keywordRepository.GetKeyword(id)
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.NotFoundError("Not found")
+		c.IndentedJSON(apiErr.Status, apiErr)
+	}
+
+	err = ku.keywordRepository.Delete(*keyword)
+	if err != nil {
+		fmt.Println(err)
+		apiErr := errors.InternalSeverError("Server Error")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
 
 	c.IndentedJSON(http.StatusOK, keyword)
 
