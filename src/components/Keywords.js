@@ -2,6 +2,8 @@
 // import { useNavigate } from "react-router-dom";
 // import { Link, redirect } from "react-router-dom";
 import { Button } from "@chakra-ui/react";
+import { format, formatDistance, formatRelative, subDays } from 'date-fns'
+import { json } from "react-router-dom";
 // import axios from 'axios'
 
 const Keywords = (props) => {
@@ -40,7 +42,7 @@ const Keywords = (props) => {
                 }
 
               </td>
-              <td>{k.CreatedAt}</td>
+              <td>  {format(Date.parse(k.CreatedAt),"yyyy/M/d HH:mm")}  </td>
               <td><Button onClick={() => props.confirmDelete(k.ID)} colorScheme={"gray"}  variant={"outline"}>
             🗑️ Delete
           </Button></td>

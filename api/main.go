@@ -9,6 +9,7 @@ import (
 	controllers "profileyou/api/controllers"
 	"profileyou/api/domain/repository"
 	"profileyou/api/infrastructure/persistance"
+	"profileyou/api/usecase"
 
 	// "profileyou/internal/repository"
 
@@ -47,7 +48,8 @@ func main() {
 
 	var keywordRepository repository.KeywordRepository
 	keywordPersistance := persistance.NewKeywordPersistance(db, keywordRepository)
-	keywordController := controllers.NewKeywordController(keywordPersistance)
+	keywordUseCase := usecase.NewKeywordUseCase(keywordPersistance)
+	keywordController := controllers.NewKeywordController(keywordUseCase)
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
