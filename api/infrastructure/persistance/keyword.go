@@ -41,19 +41,27 @@ func (kr *keywordPersistance) GetKeywords() (result []model.Keyword, err error) 
 
 func (kr *keywordPersistance) Create(k model.Keyword) error {
 
-	kr.Conn.Create(&k)
+	if result := kr.Conn.Create(&k); result.Error != nil {
+		err := result.Error
+		return err
+	}
 	return nil
 }
 
 func (kr *keywordPersistance) Update(k model.Keyword) error {
 
-	kr.Conn.Save(&k)
+	if result := kr.Conn.Save(&k); result.Error != nil {
+		err := result.Error
+		return err
+	}
 	return nil
-
 }
 
 func (kr *keywordPersistance) Delete(k model.Keyword) error {
 
-	kr.Conn.Delete(&k)
+	if result := kr.Conn.Delete(&k); result.Error != nil {
+		err := result.Error
+		return err
+	}
 	return nil
 }
