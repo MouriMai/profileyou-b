@@ -1,9 +1,10 @@
 // import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
-// import { Link, redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, redirect } from "react-router-dom";
 import { Button } from "@chakra-ui/react";
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 import { json } from "react-router-dom";
+import Keyword from "./Keyword";
 // import axios from 'axios'
 
 const Keywords = (props) => {
@@ -27,11 +28,10 @@ const Keywords = (props) => {
         <tbody>
           {props.keywords.map((k, index) => (
             <tr key={index}>
-              <td>{k.Word}
-                {/* <Link to={`/keywords/${k.ID}`}>
-                                    {k.word}
-                                </Link> */}
-              </td>
+              <td><Link href={`/keywords/${k.ID}`}>{k.Word}</Link></td>
+              {/* <td><Route path={`/keywords/${k.ID}`}><Keyword /><Route/></td> */}
+
+
               <td>{k.Description}</td>
               <td>
                 {k.ImageUrl !== "" &&
