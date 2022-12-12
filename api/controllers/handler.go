@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"profileyou/api/domain/model"
-	"profileyou/api/domain/repository"
+	"profileyou/api/usecase"
 	"profileyou/api/utils/errors"
 
 	"github.com/gin-gonic/gin"
@@ -14,11 +13,20 @@ import (
 )
 
 type keywordController struct {
-	keywordRepository repository.KeywordRepository
+	// keywordRepository repository.KeywordRepository
+	keywordUseCase usecase.KeywordUseCase
+}
+
+// likes to Usecase by "ku"
+func NewKeywordController(ku usecase.KeywordUseCase) keywordController {
+	return keywordController{
+		keywordUseCase: ku,
+	}
+
 }
 
 func (ku *keywordController) GetAllKeywordsGin(c *gin.Context) {
-	keywords, err := ku.keywordRepository.GetKeywords()
+	keywords, err := ku.keywordUseCase.GetKeywords()
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.NewBadRequestError("Bad Request")
@@ -36,7 +44,7 @@ func (ku *keywordController) GetKeyword(c *gin.Context) {
 		return
 	}
 
-	keyword, err := ku.keywordRepository.GetKeyword(id)
+	keyword, err := ku.keywordUseCase.GetKeyword(id)
 	if err != nil {
 		fmt.Printf("Error %v", err)
 		// c.JSON(http.StatusNotFound, errorResponse(err))
@@ -49,15 +57,8 @@ func (ku *keywordController) GetKeyword(c *gin.Context) {
 
 }
 
-func NewKeywordController(kr repository.KeywordRepository) keywordController {
-	return keywordController{
-		keywordRepository: kr,
-	}
-
-}
-
 func (ku *keywordController) Index(c *gin.Context) {
-	keywords, err := ku.keywordRepository.GetKeywords()
+	keywords, err := ku.keywordUseCase.GetKeywords()
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.NewBadRequestError("Bad Request")
@@ -74,7 +75,7 @@ func (ku *keywordController) DetailKeyword(c *gin.Context) {
 		return
 	}
 
-	keyword, err := ku.keywordRepository.GetKeyword(id)
+	keyword, err := ku.keywordUseCase.GetKeyword(id)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.NotFoundError("Not found")
@@ -87,10 +88,9 @@ func (ku *keywordController) DetailKeyword(c *gin.Context) {
 func (ku *keywordController) CreateKeyword(c *gin.Context) {
 	word := c.Param("word")
 	fmt.Printf("Receive a post: %s", word)
-	// age, _ := strconv.Atoi(c.PostForm("age"))
 
-	keyword := model.Keyword{Word: word}
-	err := ku.keywordRepository.Create(keyword)
+	// keyword := model.Keyword{Word: word}
+	err := ku.keywordUseCase.CreateKeyword(word)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.InternalSeverError("Server Error")
@@ -104,7 +104,7 @@ func (ku *keywordController) CreateKeyword(c *gin.Context) {
 func (ku *keywordController) UpdateKeyword(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	fmt.Printf("Updating a keyword id: %d", id)
-	keyword, err := ku.keywordRepository.GetKeyword(id)
+	keyword, err := ku.keywordUseCase.GetKeyword(id)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.NotFoundError("Not found")
@@ -114,11 +114,10 @@ func (ku *keywordController) UpdateKeyword(c *gin.Context) {
 
 	word := c.Param("word")
 	description := c.Param("description")
-	// age, _ := strconv.Atoi(c.PostForm("age"))
 
 	keyword.Word = word
 	keyword.Description = description
-	err = ku.keywordRepository.Update(*keyword)
+	err = ku.keywordUseCase.UpdateKeyword(id, word, description)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.InternalSeverError("Server Error")
@@ -137,14 +136,14 @@ func (ku *keywordController) DeleteKeyword(c *gin.Context) {
 		c.IndentedJSON(apiErr.Status, apiErr)
 	}
 
-	keyword, err := ku.keywordRepository.GetKeyword(id)
+	keyword, err := ku.keywordUseCase.GetKeyword(id)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.NotFoundError("Not found")
 		c.IndentedJSON(apiErr.Status, apiErr)
 	}
 
-	err = ku.keywordRepository.Delete(*keyword)
+	err = ku.keywordUseCase.DeleteKeyword(id)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.InternalSeverError("Server Error")
