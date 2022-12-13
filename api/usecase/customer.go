@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"profileyou/api/domain/model/keyword"
 	"profileyou/api/domain/repository"
 )
@@ -15,11 +16,11 @@ type KeywordUseCase interface {
 	// 221213
 	// GetKeyword(id int) (result *model.Keyword, err error)
 	// GetKeywords() (result []model.Keyword, err error)
-	CreateKeyword(word string, description string, imgaeUrl string) error
-	// UpdateKeyword(id int, word string, image_url string) error
 	// DeleteKeyword(id int) error
+	// UpdateKeyword(id int, word string, image_url string) error
 	GetKeyword(id string) (result *keyword.Keyword, err error)
-	GetKeywords() (result []keyword.Keyword, err error)
+	GetKeywords() (result []*keyword.Keyword, err error)
+	CreateKeyword(word string, description string, imgaeUrl string) error
 	UpdateKeyword(id string, word string, description string, image_url string) error
 	DeleteKeyword(id string) error
 }
@@ -43,8 +44,9 @@ func (ku *keywordUseCase) GetKeyword(id string) (result *keyword.Keyword, err er
 	return keyword, nil
 }
 
-func (ku *keywordUseCase) GetKeywords() (result []keyword.Keyword, err error) {
+func (ku *keywordUseCase) GetKeywords() (result []*keyword.Keyword, err error) {
 	keywords, err := ku.keywordRepository.GetKeywords()
+	fmt.Printf("USECASE: RETRIEVE KEYWORDS, %v\n", keywords)
 	if err != nil {
 		return nil, err
 	}

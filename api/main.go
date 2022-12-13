@@ -7,7 +7,6 @@ import (
 
 	sqlite "profileyou/api/config/database"
 	controllers "profileyou/api/controllers"
-	"profileyou/api/domain/repository"
 	"profileyou/api/infrastructure/persistance"
 	"profileyou/api/usecase"
 
@@ -46,9 +45,9 @@ func main() {
 	// app.DB = &dbrepo.SQliteDBRepo{DB: connect}
 	// defer app.DB.Connection().Close()
 
-	var keywordRepository repository.KeywordRepository
-	keywordPersistance := persistance.NewKeywordPersistance(db, keywordRepository)
-	keywordUseCase := usecase.NewKeywordUseCase(keywordPersistance)
+	keywordRepository := persistance.NewKeywordPersistance(db)
+	// keywordPersistance := persistance.NewKeywordPersistance(keywordRepository)
+	keywordUseCase := usecase.NewKeywordUseCase(keywordRepository)
 	keywordController := controllers.NewKeywordController(keywordUseCase)
 
 	r := gin.Default()

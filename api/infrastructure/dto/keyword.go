@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"fmt"
 	"profileyou/api/domain/model/keyword"
 	"time"
 )
@@ -40,8 +41,8 @@ func AdaptKeyword(converted_keyword *Keyword) (*keyword.Keyword, error) {
 	return keyword, nil
 }
 
-func AdaptKeywords(converted_keywords []*Keyword) ([]keyword.Keyword, error) {
-	var keywords []keyword.Keyword
+func AdaptKeywords(converted_keywords []*Keyword) ([]*keyword.Keyword, error) {
+	var keywords []*keyword.Keyword
 
 	for _, converted_keyword := range converted_keywords {
 		keyword, err := keyword.New(
@@ -50,12 +51,15 @@ func AdaptKeywords(converted_keywords []*Keyword) ([]keyword.Keyword, error) {
 			converted_keyword.Description,
 			converted_keyword.ImageUrl,
 		)
+		fmt.Printf("DTO: CONVERTED KEYWORD 1 ERROR, %v\n", err)
 
 		if err != nil {
+			fmt.Printf("DTO: CONVERTED KEYWORDS ERROR, %v\n", err)
 			return nil, err
 		}
-		keywords = append(keywords, *keyword)
+		keywords = append(keywords, keyword)
 	}
+	fmt.Printf("DTO: RETRIEVE KEYWORDS, %v\n", keywords)
 
 	return keywords, nil
 }

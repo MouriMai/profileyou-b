@@ -12,7 +12,6 @@ import (
 )
 
 type keywordController struct {
-	// keywordRepository repository.KeywordRepository
 	keywordUseCase usecase.KeywordUseCase
 }
 
@@ -24,15 +23,44 @@ func NewKeywordController(ku usecase.KeywordUseCase) keywordController {
 
 }
 
-func (ku *keywordController) GetAllKeywordsGin(c *gin.Context) {
-	keywords, err := ku.keywordUseCase.GetKeywords()
+func (kc *keywordController) GetAllKeywordsGin(c *gin.Context) {
+	// fmt.Println("GET ALL KEYWORDS")
+	// keywords, err := ku.keywordUseCase.GetKeywords()
+	// fmt.Printf("RETRIEVE KEYWORDS, %v", keywords)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	apiErr := errors.NewBadRequestError("Bad Request")
+	// 	c.IndentedJSON(apiErr.Status, apiErr)
+	// 	return
+	// }
+	// c.IndentedJSON(http.StatusOK, keywords)
+	fmt.Println("GET ALL KEYWORDS")
+	keywords, err := kc.keywordUseCase.GetKeywords()
+	fmt.Printf("HANDLER: RETRIEVE KEYWORDS, %v\n", keywords)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.NewBadRequestError("Bad Request")
 		c.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}
-	c.IndentedJSON(http.StatusOK, keywords)
+	// 20221213 - Deleted prior to implement ResultDataField struct
+	// c.IndentedJSON(http.StatusOK, keywords)
+
+	type ResultDataField struct {
+		KeywordId   string
+		Word        string
+		Description string
+		ImageUrl    string
+	}
+	var data []ResultDataField
+	for _, keyword := range keywords {
+		keywordId := string(keyword.GetKeywordId())
+		word := string(keyword.GetWord())
+		description := string(keyword.GetDescription())
+		imageUrl := string(keyword.GetImageUrl())
+		data = append(data, ResultDataField{KeywordId: keywordId, Word: word, Description: description, ImageUrl: imageUrl})
+	}
+	c.IndentedJSON(http.StatusOK, data)
 }
 
 func (ku *keywordController) GetKeyword(c *gin.Context) {
@@ -57,7 +85,9 @@ func (ku *keywordController) GetKeyword(c *gin.Context) {
 }
 
 func (ku *keywordController) Index(c *gin.Context) {
+	fmt.Println("GET ALL KEYWORDS")
 	keywords, err := ku.keywordUseCase.GetKeywords()
+	fmt.Printf("RETRIEVE KEYWORDS, %v", keywords)
 	if err != nil {
 		fmt.Println(err)
 		apiErr := errors.NewBadRequestError("Bad Request")
@@ -221,7 +251,7 @@ func (ku *keywordController) DeleteKeyword(c *gin.Context) {
 	err := ku.keywordUseCase.DeleteKeyword(id)
 	if err != nil {
 		fmt.Println(err)
-		apiErr := errors.InternalSeverError("Server Error")
+		apiErr := errors.InternalSeverError("Server Error due to immutable setting")
 		c.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}

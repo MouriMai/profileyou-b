@@ -1,14 +1,13 @@
 package database
 
 import (
-	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 type Keyword struct {
 	gorm.Model
-	KeywordId   string
+	// KeywordId   string
 	Word        string
 	Description string
 	ImageUrl    string
@@ -27,8 +26,4 @@ func New() *gorm.DB {
 	db.AutoMigrate(&Keyword{})
 
 	return db
-}
-
-func errorResponse(err error) gin.H {
-	return gin.H{"error": err.Error()}
 }

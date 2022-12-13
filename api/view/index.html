@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta httpequiv="ContentType" content="text/html;charset=utf8">
+    </head>
+    <body>
+        <form method="POST" action="/customer/create">
+            <p>名前： <input type="text" name="name" value="" /></p>
+            <p>年齢： <input type="text" name="age" value="" /></p>
+            <input type="submit" value="作成" /> 
+        </form>
+        <hr>
+        <table border="1">
+            {{ range .customers }}
+                <tr>
+                    <td><a href="/customer/{{.CustomerId}}">{{.CustomerId}}</a></td>
+                    <td>{{.Name}}</td>
+                    <td>{{.Age}}</td>
+                </tr>
+            {{ end }}
+        </table>
+    </body>
+</html>
