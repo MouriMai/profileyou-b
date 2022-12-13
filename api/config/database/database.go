@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -21,14 +20,10 @@ func New() *gorm.DB {
 	}
 
 	// Seed datas
-	// db.Create(&models.Keyword{Word: "クリスマス", Description: "", ImageUrl: "test"})
-	// db.Create(&models.Keyword{Word: "お正月", Description: "", ImageUrl: "test"})
+	// db.Create(Keyword{Word: "クリスマス", Description: "", ImageUrl: "test", KeywordId: "1"})
+	// db.Create(Keyword{Word: "お正月", Description: "", ImageUrl: "test", KeywordId: "2"})
 
 	db.AutoMigrate(&Keyword{})
 
 	return db
-}
-
-func errorResponse(err error) gin.H {
-	return gin.H{"error": err.Error()}
 }

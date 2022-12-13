@@ -7,7 +7,6 @@ import (
 
 	sqlite "profileyou/api/config/database"
 	controllers "profileyou/api/controllers"
-	"profileyou/api/domain/repository"
 	"profileyou/api/infrastructure/persistance"
 	"profileyou/api/usecase"
 
@@ -17,19 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 	// "gorm.io/driver/sqlite"
 )
-
-// const port = 8080
-
-// type application struct {
-// 	DSN          string
-// 	Domain       string
-// 	DB           repository.DatabaseRepo
-// 	JWTSecret    string
-// 	JWTIssuer    string
-// 	JWTAudience  string
-// 	CookieDomain string
-// 	APIKey       string
-// }
 
 func main() {
 	// set application config
@@ -46,12 +32,13 @@ func main() {
 	// app.DB = &dbrepo.SQliteDBRepo{DB: connect}
 	// defer app.DB.Connection().Close()
 
-	var keywordRepository repository.KeywordRepository
-	keywordPersistance := persistance.NewKeywordPersistance(db, keywordRepository)
-	keywordUseCase := usecase.NewKeywordUseCase(keywordPersistance)
+	// DI
+	keywordRepository := persistance.NewKeywordPersistance(db)
+	keywordUseCase := usecase.NewKeywordUseCase(keywordRepository)
 	keywordController := controllers.NewKeywordController(keywordUseCase)
 
 	r := gin.Default()
+	r.LoadHTMLGlob("api/view/*html")
 	r.Use(cors.New(cors.Config{
 		// アクセスを許可したいアクセス元
 		AllowOrigins: []string{
@@ -110,7 +97,7 @@ func main() {
 			"message": "Hello world",
 		})
 	})
-	r.Run()
+	r.Run(":8080")
 
 	// out, err := exec.Command("/bin/bash", "python3 api/api.py").Output()
 	// if err != nil {

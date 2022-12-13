@@ -1,6 +1,7 @@
 package persistance
 
 import (
+	"fmt"
 	"profileyou/api/domain/model/keyword"
 	"profileyou/api/domain/repository"
 	"profileyou/api/infrastructure/dto"
@@ -12,7 +13,7 @@ type keywordPersistance struct {
 	Conn *gorm.DB
 }
 
-func NewKeywordPersistance(conn *gorm.DB, k repository.KeywordRepository) *keywordPersistance {
+func NewKeywordPersistance(conn *gorm.DB) repository.KeywordRepository {
 	return &keywordPersistance{Conn: conn}
 }
 
@@ -34,7 +35,7 @@ func (kp *keywordPersistance) GetKeyword(id string) (result *keyword.Keyword, er
 
 }
 
-func (kp *keywordPersistance) GetKeywords() (result []keyword.Keyword, err error) {
+func (kp *keywordPersistance) GetKeywords() (result []*keyword.Keyword, err error) {
 
 	var keywords []*dto.Keyword
 
@@ -42,12 +43,13 @@ func (kp *keywordPersistance) GetKeywords() (result []keyword.Keyword, err error
 		err := result.Error
 		return nil, err
 	}
+	fmt.Println(result)
 
 	result_keywords, err := dto.AdaptKeywords(keywords)
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(result_keywords)
 	return result_keywords, nil
 }
 

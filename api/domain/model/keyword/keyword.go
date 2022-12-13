@@ -6,14 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// type Keyword struct {
-// 	gorm.Model
-// 	ID          int    `json:"id`
-// 	Word        string `json:"word`
-// 	Description string `json:"description`
-// 	ImageUrl    string `json:"image_url`
-// }
-
 type Keyword struct {
 	keywordId   keywordId
 	word        word
@@ -69,20 +61,20 @@ func Create(word string, description string, imageUrl string) (*Keyword, error) 
 }
 
 // Getter
-func (k Keyword) GetKeywordId() keywordId {
-	return k.keywordId
+func (k Keyword) GetKeywordId() string {
+	return string(k.keywordId)
 }
 
-func (k Keyword) GetWord() word {
-	return k.word
+func (k Keyword) GetWord() string {
+	return string(k.word)
 }
 
-func (k Keyword) GetDescription() description {
-	return k.description
+func (k Keyword) GetDescription() string {
+	return string(k.description)
 }
 
-func (k Keyword) GetImageUrl() imageUrl {
-	return k.imageUrl
+func (k Keyword) GetImageUrl() string {
+	return string(k.imageUrl)
 }
 
 // value constructors

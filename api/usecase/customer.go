@@ -15,12 +15,12 @@ type KeywordUseCase interface {
 	// 221213
 	// GetKeyword(id int) (result *model.Keyword, err error)
 	// GetKeywords() (result []model.Keyword, err error)
-	CreateKeyword(word string, description string, imgaeUrl string) error
 	// UpdateKeyword(id int, word string, image_url string) error
 	// DeleteKeyword(id int) error
 	GetKeyword(id string) (result *keyword.Keyword, err error)
-	GetKeywords() (result []keyword.Keyword, err error)
-	UpdateKeyword(id string, word string, description string, image_url string) error
+	GetKeywords() (result []*keyword.Keyword, err error)
+	CreateKeyword(word string, description string, imgaeUrl string) error
+	UpdateKeyword(id string, word string, description string, imageUrl string) error
 	DeleteKeyword(id string) error
 }
 
@@ -43,7 +43,7 @@ func (ku *keywordUseCase) GetKeyword(id string) (result *keyword.Keyword, err er
 	return keyword, nil
 }
 
-func (ku *keywordUseCase) GetKeywords() (result []keyword.Keyword, err error) {
+func (ku *keywordUseCase) GetKeywords() (result []*keyword.Keyword, err error) {
 	keywords, err := ku.keywordRepository.GetKeywords()
 	if err != nil {
 		return nil, err
@@ -53,8 +53,6 @@ func (ku *keywordUseCase) GetKeywords() (result []keyword.Keyword, err error) {
 }
 
 func (ku *keywordUseCase) CreateKeyword(word string, description string, imageUrl string) error {
-	// keyword := model.Keyword{Word: word}
-	// err := ku.keywordRepository.Create(keyword)
 	keyword, err := keyword.Create(word, description, imageUrl)
 	if err != nil {
 		return err
@@ -77,7 +75,8 @@ func (ku *keywordUseCase) UpdateKeyword(id string, word string, description stri
 	// keyword.Word = word
 	// keyword.Description = description
 	// err = ku.keywordRepository.Update(*keyword)
-	keywordId := string(current_keyword.GetKeywordId())
+
+	keywordId := current_keyword.GetKeywordId()
 	update_keyword, err := keyword.New(keywordId, word, description, imgeUrl)
 	if err != nil {
 		return err

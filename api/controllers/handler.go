@@ -26,13 +26,29 @@ func NewKeywordController(ku usecase.KeywordUseCase) keywordController {
 
 func (ku *keywordController) GetAllKeywordsGin(c *gin.Context) {
 	keywords, err := ku.keywordUseCase.GetKeywords()
+	fmt.Printf("keywords :%v\n", keywords)
 	if err != nil {
 		fmt.Println(err)
-		apiErr := errors.NewBadRequestError("Bad Request")
+		apiErr := errors.NewBadRequestError("Get all Bad Request")
 		c.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}
-	c.IndentedJSON(http.StatusOK, keywords)
+	type ResultDataField struct {
+		KeywordId   string
+		Word        string
+		Description string
+		ImageUrl    string
+	}
+	var data []ResultDataField
+	for _, keyword := range keywords {
+		keywordId := string(keyword.GetKeywordId())
+		word := string(keyword.GetWord())
+		description := string(keyword.GetDescription())
+		imageUrl := string(keyword.GetImageUrl())
+		data = append(data, ResultDataField{KeywordId: keywordId, Word: word, Description: description, ImageUrl: imageUrl})
+	}
+	// c.HTML(200, "index.html", gin.H{"keywords": data})
+	c.IndentedJSON(http.StatusOK, data)
 }
 
 func (ku *keywordController) GetKeyword(c *gin.Context) {
@@ -58,9 +74,10 @@ func (ku *keywordController) GetKeyword(c *gin.Context) {
 
 func (ku *keywordController) Index(c *gin.Context) {
 	keywords, err := ku.keywordUseCase.GetKeywords()
+	fmt.Printf("keywords :%v\n", keywords)
 	if err != nil {
 		fmt.Println(err)
-		apiErr := errors.NewBadRequestError("Bad Request")
+		apiErr := errors.NewBadRequestError("Index Bad Request")
 		c.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}
@@ -71,15 +88,18 @@ func (ku *keywordController) Index(c *gin.Context) {
 		KeywordId   string
 		Word        string
 		Description string
+		ImageUrl    string
 	}
 	var data []ResultDataField
 	for _, keyword := range keywords {
 		keywordId := string(keyword.GetKeywordId())
 		word := string(keyword.GetWord())
 		description := string(keyword.GetDescription())
-		data = append(data, ResultDataField{KeywordId: keywordId, Word: word, Description: description})
+		imageUrl := string(keyword.GetImageUrl())
+		data = append(data, ResultDataField{KeywordId: keywordId, Word: word, Description: description, ImageUrl: imageUrl})
 	}
-	c.IndentedJSON(http.StatusOK, data)
+	c.HTML(200, "index.html", gin.H{"keywords": data})
+	// c.IndentedJSON(http.StatusOK, data)
 }
 
 func (ku *keywordController) DetailKeyword(c *gin.Context) {

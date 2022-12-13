@@ -40,7 +40,7 @@ const Keywords = (props) => {
                 }
 
               </td>
-              <td>  {format(Date.parse(k.CreatedAt),"yyyy/M/d HH:mm")}  </td>
+              {/* <td>  {format(Date.parse(k.CreatedAt),"yyyy/M/d HH:mm")}  </td> */}
               <td><Button onClick={() => props.confirmDelete(k.ID)} colorScheme={"gray"}  variant={"outline"}>
                 🗑️ Delete
                 </Button>

@@ -18,10 +18,10 @@ type Keyword struct {
 
 func ConvertKeyword(k *keyword.Keyword) *Keyword {
 	return &Keyword{
-		KeywordId:   string(k.GetKeywordId()),
-		Word:        string(k.GetWord()),
-		Description: string(k.GetDescription()),
-		ImageUrl:    string(k.GetImageUrl()),
+		KeywordId:   k.GetKeywordId(),
+		Word:        k.GetWord(),
+		Description: k.GetDescription(),
+		ImageUrl:    k.GetImageUrl(),
 	}
 }
 
@@ -40,8 +40,8 @@ func AdaptKeyword(converted_keyword *Keyword) (*keyword.Keyword, error) {
 	return keyword, nil
 }
 
-func AdaptKeywords(converted_keywords []*Keyword) ([]keyword.Keyword, error) {
-	var keywords []keyword.Keyword
+func AdaptKeywords(converted_keywords []*Keyword) ([]*keyword.Keyword, error) {
+	var keywords []*keyword.Keyword
 
 	for _, converted_keyword := range converted_keywords {
 		keyword, err := keyword.New(
@@ -54,7 +54,7 @@ func AdaptKeywords(converted_keywords []*Keyword) ([]keyword.Keyword, error) {
 		if err != nil {
 			return nil, err
 		}
-		keywords = append(keywords, *keyword)
+		keywords = append(keywords, keyword)
 	}
 
 	return keywords, nil
