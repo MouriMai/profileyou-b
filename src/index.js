@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { BrowserRouter, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import Keywords from './components/Keywords';
 import Keyword from './components/Keyword';
@@ -43,7 +43,10 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <BrowserRouter>
+    <App />
+      {/* <RouterProvider router={router} /> */}
+    </BrowserRouter>
   </React.StrictMode>
 );
 

@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const Keyword = () => {
+const Keyword = (props) => {
     const [keyword, setKeyword] = useState({});
     let { id } = useParams();
 
@@ -15,7 +15,7 @@ const Keyword = () => {
             headers: headers,
         }
 
-        fetch(`/keyword/${id}`, requestOptions)
+        fetch(`/keywords/${id}`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
                 setKeyword(data);
@@ -28,13 +28,13 @@ const Keyword = () => {
 
     return(
         <div>
-            <h2>Keyword: {keyword.word}</h2>
-            <small><em>{keyword.description}</em></small><br />
+            <h2>Keyword: {keyword.Word}</h2>
+            <small><em>{keyword.Description}</em></small><br />
             <hr />
 
-            {keyword.image_url !== "" &&
+            {keyword.imageUrl !== "" &&
                 <div className="mb-3">
-                    <img src={`${keyword.image_url}`} alt="picture" />
+                    <img src={`${keyword.ImageUrl}`} alt="picture" />
                 </div>
             }
 

@@ -1,4 +1,4 @@
-// import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Link, redirect } from "react-router-dom";
 import { Button } from "@chakra-ui/react";
@@ -9,8 +9,6 @@ import Keyword from "./Keyword";
 
 const Keywords = (props) => {
   // const navigate = useNavigate();
-  // const [keywords, setKeywords] = useState([]);
-
 
 
   return (
@@ -28,7 +26,7 @@ const Keywords = (props) => {
         <tbody>
           {props.keywords.map((k, index) => (
             <tr key={index}>
-              <td><Link href={`/keywords/${k.ID}`}>{k.Word}</Link></td>
+              <td><Link to={`/keywords/${k.ID}`}>{k.Word}</Link></td>
               {/* <td><Route path={`/keywords/${k.ID}`}><Keyword /><Route/></td> */}
 
 
@@ -44,8 +42,9 @@ const Keywords = (props) => {
               </td>
               <td>  {format(Date.parse(k.CreatedAt),"yyyy/M/d HH:mm")}  </td>
               <td><Button onClick={() => props.confirmDelete(k.ID)} colorScheme={"gray"}  variant={"outline"}>
-            🗑️ Delete
-          </Button></td>
+                🗑️ Delete
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>

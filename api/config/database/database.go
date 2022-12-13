@@ -8,6 +8,7 @@ import (
 
 type Keyword struct {
 	gorm.Model
+	KeywordId   string
 	Word        string
 	Description string
 	ImageUrl    string

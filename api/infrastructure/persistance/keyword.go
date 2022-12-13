@@ -1,8 +1,9 @@
 package persistance
 
 import (
-	"profileyou/api/domain/model"
+	"profileyou/api/domain/model/keyword"
 	"profileyou/api/domain/repository"
+	"profileyou/api/infrastructure/dto"
 
 	"gorm.io/gorm"
 )
@@ -15,51 +16,65 @@ func NewKeywordPersistance(conn *gorm.DB, k repository.KeywordRepository) *keywo
 	return &keywordPersistance{Conn: conn}
 }
 
-func (kr *keywordPersistance) GetKeyword(id int) (result *model.Keyword, err error) {
+func (kp *keywordPersistance) GetKeyword(id string) (result *keyword.Keyword, err error) {
 
-	var keyword model.Keyword
-	if result := kr.Conn.First(&keyword, id); result.Error != nil {
+	var keyword dto.Keyword
+	if result := kp.Conn.Where("customer_id = ?", id).First(&keyword, id); result.Error != nil {
 		err := result.Error
 		return nil, err
 	}
 
-	return &keyword, nil
+	// return &keyword, nil
+	result_keyword, err := dto.AdaptKeyword(&keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	return result_keyword, nil
 
 }
 
-func (kr *keywordPersistance) GetKeywords() (result []model.Keyword, err error) {
+func (kp *keywordPersistance) GetKeywords() (result []keyword.Keyword, err error) {
 
-	var keywords []model.Keyword
+	var keywords []*dto.Keyword
 
-	if result := kr.Conn.Find(&keywords); result.Error != nil {
+	if result := kp.Conn.Find(&keywords); result.Error != nil {
 		err := result.Error
 		return nil, err
 	}
 
-	return keywords, nil
+	result_keywords, err := dto.AdaptKeywords(keywords)
+	if err != nil {
+		return nil, err
+	}
+
+	return result_keywords, nil
 }
 
-func (kr *keywordPersistance) Create(k model.Keyword) error {
+func (kp *keywordPersistance) Create(k *keyword.Keyword) error {
 
-	if result := kr.Conn.Create(&k); result.Error != nil {
+	converted_keyword := dto.ConvertKeyword(k)
+	if result := kp.Conn.Create(converted_keyword); result.Error != nil {
 		err := result.Error
 		return err
 	}
 	return nil
 }
 
-func (kr *keywordPersistance) Update(k model.Keyword) error {
+func (kp *keywordPersistance) Update(k *keyword.Keyword) error {
 
-	if result := kr.Conn.Save(&k); result.Error != nil {
+	converted_keyword := dto.ConvertKeyword(k)
+	if result := kp.Conn.Save(converted_keyword); result.Error != nil {
 		err := result.Error
 		return err
 	}
 	return nil
 }
 
-func (kr *keywordPersistance) Delete(k model.Keyword) error {
+func (kp *keywordPersistance) Delete(k *keyword.Keyword) error {
 
-	if result := kr.Conn.Delete(&k); result.Error != nil {
+	converted_keyword := dto.ConvertKeyword(k)
+	if result := kp.Conn.Where("keyword_id = ?", converted_keyword.KeywordId).Delete(converted_keyword); result.Error != nil {
 		err := result.Error
 		return err
 	}

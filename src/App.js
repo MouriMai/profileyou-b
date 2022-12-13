@@ -19,6 +19,9 @@ import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import Keywords from "./components/Keywords";
 import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Keyword from "./components/Keyword";
+import { Outlet } from "react-router-dom";
 
 
 const App = () => {
@@ -162,8 +165,15 @@ const App = () => {
         ) : null}
 
         <pre>{JSON.stringify(prompt)}</pre>
-
-        <Keywords keywords={keywords} confirmDelete={confirmDelete}/>
+        {/* Outletは共通NavBarとかを望むとき */}
+        {/* <Outlet context={{keywords, confirmDelete}}/> */}
+        {/* Routeの一部にしない下記の記述は居座るから🆖 */}
+        {/* <Keywords keywords={keywords} confirmDelete={confirmDelete}/> */}
+        {/* このルーティングめちゃくちゃ苦労した　何だこれ */}
+        <Routes>
+          <Route path={`/keywords`} element={<Keywords keywords={keywords} confirmDelete={confirmDelete}/>} />
+          <Route path={`/keywords/:id`} element={<Keyword />} />
+        </Routes>
 
       </Container>
     </ChakraProvider>
