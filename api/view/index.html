@@ -4,7 +4,7 @@
         <meta httpequiv="ContentType" content="text/html;charset=utf8">
     </head>
     <body>
-        <form method="POST" action="/customer/create">
+        <form method="POST" action="/keyword/create">
             <p>ワード： <input type="text" name="word" value="" /></p>
             <p>Description： <input type="text" name="description" value="" /></p>
             <p>imageUrl： <input type="text" name="imageUrl" value="" /></p>
@@ -14,7 +14,7 @@
         <table border="1">
             {{ range .keywords }}
                 <tr>
-                    <td><a href="/keyword/{{.KeywordId}}">{{.KeywordId}}</a></td>
+                    <td><a href="/keywords/{{.KeywordId}}">{{.KeywordId}}</a></td>
                     <td>{{.Word}}</td>
                     <td>{{.Description}}</td>
                 </tr>

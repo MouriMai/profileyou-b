@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta httpequiv="ContentType" content="text/html;charset=utf8">
+    </head>
+    <body>
+        <form method="POST">
+          <p>Word：{{ .keyword.KeywordId }} <input type="hidden" name="id" value="{{ .keyword.KeywordId }}" /></p>
+          <p>Word：<input type="text" name="word" value="{{ .keyword.Word }}" /></p>
+          <p>Description： <input type="text" name="description" value="{{ .keyword.Description }}" /></p>
+          <p>ImageUrl： <input type="text" name="image_url" value="{{ .keyword.imageUrl }}" /></p>
+          <input type="submit" formaction="/keyword/update" value="更新" /> 
+          <input type="submit" formaction="/keyword/delete" value="削除" /> 
+        </form>
+    </body>
+</html>
+

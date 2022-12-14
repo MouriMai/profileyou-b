@@ -18,9 +18,6 @@ import (
 )
 
 func main() {
-	// set application config
-	// var app application
-
 	// connect to the database
 	db := sqlite.New()
 
@@ -29,8 +26,6 @@ func main() {
 		panic(err)
 	}
 	defer connect.Close()
-	// app.DB = &dbrepo.SQliteDBRepo{DB: connect}
-	// defer app.DB.Connection().Close()
 
 	// DI
 	keywordRepository := persistance.NewKeywordPersistance(db)

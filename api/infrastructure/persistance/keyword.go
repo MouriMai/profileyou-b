@@ -20,7 +20,7 @@ func NewKeywordPersistance(conn *gorm.DB) repository.KeywordRepository {
 func (kp *keywordPersistance) GetKeyword(id string) (result *keyword.Keyword, err error) {
 
 	var keyword dto.Keyword
-	if result := kp.Conn.Where("customer_id = ?", id).First(&keyword, id); result.Error != nil {
+	if result := kp.Conn.Where("keyword_id = ?", id).First(&keyword, id); result.Error != nil {
 		err := result.Error
 		return nil, err
 	}

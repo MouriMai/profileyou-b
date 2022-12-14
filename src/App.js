@@ -26,9 +26,16 @@ import { Outlet } from "react-router-dom";
 
 const App = () => {
   const [image, updateImage] = useState();
-  const [prompt, updatePrompt] = useState();
+  const [word, updateWord] = useState();
   const [loading, updateLoading] = useState();
   const [keywords, setKeywords] = useState([]);
+  const [keyword, setKeyword] = useState({
+    id: 0,
+    word: "",
+    description: "",
+    imageUrl: "",
+    keywordId: ""
+  });
 
 
   // START FETCHING
@@ -101,22 +108,33 @@ const App = () => {
   }
     // FINISH DELETE
 
-  const generate = async (prompt) => {
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      console.log({ word });
+      generate(word)
+    };
+
+  const generate = async (word) => {
     updateLoading(true);
-    // const request = await axios.post(`http://localhost:8080/keyword/create/${prompt}`);
-    // const result = await axios.get(`http://localhost:8080/keyword/create/${prompt}`);
+    // const request = await axios.post(`http://localhost:8080/keyword/create/${word}`);
+    // const result = await axios.get(`http://localhost:8080/keyword/create/${word}`);
     // updateImage(result.data);
+    const requestBody = word;
+    
     let headers = new Headers();
+    // headers.append("Content-Type", "application/json");
         // headers.append("Authorization", "Bearer " + jwtToken)
         const requestOptions = {
           method: "POST",
           headers: headers,
+          body: JSON.stringify(requestBody)
         };
 
-        const url = `http://localhost:8080/keyword/create/${prompt}`;
+        const url = `http://localhost:8080/keyword/create/${word}`;
         fetch(url, requestOptions)
           .then((response) => response.json())
           .then((data) => {
+            console.log(data);
             if (data.error) {
               console.log(data.error);
             } else {
@@ -142,17 +160,19 @@ const App = () => {
           Profile You!
         </div>
         <Wrap marginBottom={"10px"}>
-          <Input
-            value={prompt}
-            onChange={(e) => updatePrompt(e.target.value)}
-            width={"350px"}
-          ></Input>
-          <Button onClick={(e) => {
-            e.preventDefault()
-            generate(prompt)
-            }} colorScheme={"yellow"}>
-            Generate
-          </Button>
+          <form method="post" onSubmit={handleSubmit}>
+            <Input
+              id="word"
+              value={word}
+              name="word"
+              onChange={(e) => updateWord(e.target.value)}
+              width={"350px"}
+            ></Input>
+            <button type="submit">Send</button>
+            <Button colorScheme={"yellow"}>
+              Generate
+            </Button>
+          </form>
         </Wrap>
 
         {loading ? (
@@ -164,7 +184,7 @@ const App = () => {
           <Image src={`data:image/png;base64,${image}`} boxShadow="lg" />
         ) : null}
 
-        <pre>{JSON.stringify(prompt)}</pre>
+        <pre>{JSON.stringify(word)}</pre>
         {/* Outletは共通NavBarとかを望むとき */}
         {/* <Outlet context={{keywords, confirmDelete}}/> */}
         {/* Routeの一部にしない下記の記述は居座るから🆖 */}
@@ -181,3 +201,4 @@ const App = () => {
 }
 
 export default App;
+

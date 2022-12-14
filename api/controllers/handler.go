@@ -12,7 +12,6 @@ import (
 )
 
 type keywordController struct {
-	// keywordRepository repository.KeywordRepository
 	keywordUseCase usecase.KeywordUseCase
 }
 
@@ -52,23 +51,43 @@ func (ku *keywordController) GetAllKeywordsGin(c *gin.Context) {
 }
 
 func (ku *keywordController) GetKeyword(c *gin.Context) {
+	// 221213 - immutable model
+	// Params are changed to string for encrypting
 	// id, err := strconv.Atoi(c.Param("id"))
 	// if err != nil {
 	// 	apiErr := errors.NewBadRequestError("Bad Request")
 	// 	c.IndentedJSON(apiErr.Status, apiErr)
 	// 	return
 	// }
+	// id := c.Param("id")
+	// keyword, err := ku.keywordUseCase.GetKeyword(id)
+
+	// if err != nil {
+	// 	fmt.Printf("Error %v", err)
+	// 	apiErr := errors.NotFoundError("Not found")
+	// 	c.IndentedJSON(apiErr.Status, apiErr)
+	// 	return
+	// }
+
+	// c.IndentedJSON(http.StatusOK, keyword)
 	id := c.Param("id")
 	keyword, err := ku.keywordUseCase.GetKeyword(id)
-
 	if err != nil {
-		fmt.Printf("Error %v", err)
-		apiErr := errors.NotFoundError("Not found")
+		fmt.Println(err)
+		apiErr := errors.NotFoundError("Tried to find the record but Not found")
 		c.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}
+	// c.IndentedJSON(http.StatusOK, keyword)
 
-	c.IndentedJSON(http.StatusOK, keyword)
+	type ResultDataField struct {
+		KeywordId   string
+		Word        string
+		Description string
+	}
+
+	data := ResultDataField{KeywordId: string(keyword.GetKeywordId()), Word: string(keyword.GetWord()), Description: string(keyword.GetDescription())}
+	c.IndentedJSON(http.StatusOK, data)
 
 }
 
@@ -132,36 +151,36 @@ func (ku *keywordController) DetailKeyword(c *gin.Context) {
 }
 
 func (ku *keywordController) CreateKeyword(c *gin.Context) {
+	// 221214 form bindingができなくて一旦Paramから抜き取る変な感じ
+	word := c.Param("word")
+	fmt.Printf("Paramで受け取れるか%v\n", word)
 
 	// 20221213 - Validation for create
-	// type RequestDataField struct {
-	// 	Word string `form:"word" binding:"required"`
-	// 	Description string `form:"description"`
-	// 	ImageUrl string `form:"image_url"`
-	// }
+	type RequestDataField struct {
+		Word string `form:"word" binding:"required"`
+		// Description string `form:"description"`
+		// ImageUrl    string `form:"image_url"`
+	}
 
-	// var form RequestDataField
-	// if err := c.ShouldBind(&form); err != nil {
-	// 	fmt.Println(err)
-	// 	apiErr := errors.NewBadRequestError("Bad request")
-	// 	c.IndentedJSON(apiErr.Status, apiErr)
-	// 	return
-	// }
+	var form RequestDataField
+	fmt.Printf("&jsonには何が入っているのか%v\n", &form)
+	if err := c.ShouldBind(&form); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		apiErr := errors.NewBadRequestError("Bad request on binding json")
+		c.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
 
-	// word := form.Word
-
-	//
-
-	word := c.Param("word")
-	description := c.Param("description")
-	imageUrl := c.Param("imageUrl")
-	fmt.Printf("Receive a post: %s", word)
+	word = form.Word
+	description := ""
+	imageUrl := ""
+	fmt.Printf("Receive a post: %s\n", word)
 
 	// keyword := model.Keyword{Word: word}
 	err := ku.keywordUseCase.CreateKeyword(word, description, imageUrl)
 	if err != nil {
 		fmt.Println(err)
-		apiErr := errors.InternalSeverError("Server Error")
+		apiErr := errors.InternalSeverError("Server Error when posting")
 		c.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}
@@ -192,7 +211,7 @@ func (ku *keywordController) UpdateKeyword(c *gin.Context) {
 	description := form.Description
 	imageUrl := form.ImageUrl
 
-	fmt.Printf("Updating a keyword id: %d", id)
+	fmt.Printf("Updating a keyword id: %v", id)
 	keyword, err := ku.keywordUseCase.GetKeyword(id)
 	if err != nil {
 		fmt.Println(err)
@@ -250,128 +269,3 @@ func (ku *keywordController) DeleteKeyword(c *gin.Context) {
 
 	// c.Redirect(302, "/")
 }
-
-// func (app *application) GetAllKeywords(w http.ResponseWriter, r *http.Request) {
-// 	keywords, err := app.DB.AllKeywords()
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return
-// 	}
-
-// 	out, err := json.Marshal(keywords)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusOK)
-// 	w.Write(out)
-// var keywords []models.Keyword
-
-// Temtative list
-// one := models.Keyword{
-// 	ID:          1,
-// 	Word:        "クリスマス",
-// 	ImageUrl:    "",
-// 	Description: "12月にプレゼント渡す",
-// 	CreatedAt:   time.Now(),
-// }
-// keywords = append(keywords, one)
-
-// two := models.Keyword{
-// 	ID:          2,
-// 	Word:        "テスラ",
-// 	ImageUrl:    "",
-// 	Description: "イーロンマスクがTwitter買収",
-// 	CreatedAt:   time.Now(),
-// }
-// keywords = append(keywords, two)
-
-// out, err := json.Marshal(keywords)
-// if err != nil {
-// 	fmt.Println(err)
-// }
-
-// c.JSONP(http.StatusOK, gin.H{
-// 	"message": "ok",
-// 	"data":    out,
-// 	"lists":   keywords,
-// })
-
-// }
-
-// func (app *application) GetKeyword(w http.ResponseWriter, r *http.Request) {
-// 	// db := sqlite.New()
-
-// 	// id := c.Param("id")
-// 	id := chi.URLParam(r, "id")
-// 	keywordID, err := strconv.Atoi(id)
-// 	if err != nil {
-// 		app.errorJSON(w, err)
-// 		return
-// 	}
-
-// 	keyword, err := app.DB.OneMovie(keywordID)
-// 	if err != nil {
-// 		app.errorJSON(w, err)
-// 		return
-// 	}
-
-// 	_ = app.writeJSON(w, http.StatusOK, keyword)
-
-// }
-
-// func GetKeywords() []Keyword {
-// 	db := sqlite.New()
-
-// 	connect, err := db.DB()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	var keywords []Keyword
-// 	db.Find(&keywords)
-
-// 	connect.Close()
-
-// 	return keywords
-// }
-
-// func (c *Keyword) Create() {
-// 	db := sqlite.New()
-
-// 	connect, err := db.DB()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	db.Create(c)
-
-// 	connect.Close()
-// }
-
-// func (c *Keyword) Update() {
-// 	db := sqlite.New()
-
-// 	connect, err := db.DB()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	db.Save(c)
-
-// 	connect.Close()
-// }
-
-// func (c *Keyword) Delete() {
-// 	db := sqlite.New()
-
-// 	connect, err := db.DB()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	db.Delete(c)
-
-// 	connect.Close()
-// }

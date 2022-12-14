@@ -10,7 +10,6 @@ import Keyword from "./Keyword";
 const Keywords = (props) => {
   // const navigate = useNavigate();
 
-
   return (
     <div>
       <h2>📘  Keywords History</h2>

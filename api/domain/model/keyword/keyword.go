@@ -101,10 +101,10 @@ func newWord(value string) (*word, error) {
 }
 
 func newDescription(value string) (*description, error) {
-	if value == "" {
-		err := fmt.Errorf("%s", "empty arg:description newDescription()")
-		return nil, err
-	}
+	// if value == "" {
+	// 	err := fmt.Errorf("%s", "empty arg:description newDescription()")
+	// 	return nil, err
+	// }
 
 	description := description(value)
 
@@ -112,10 +112,10 @@ func newDescription(value string) (*description, error) {
 }
 
 func newImageUrl(value string) (*imageUrl, error) {
-	if value == "" {
-		err := fmt.Errorf("%s", "empty arg:imageUrl newImageUrl()")
-		return nil, err
-	}
+	// if value == "" {
+	// 	err := fmt.Errorf("%s", "empty arg:imageUrl newImageUrl()")
+	// 	return nil, err
+	// }
 
 	imageUrl := imageUrl(value)
 
