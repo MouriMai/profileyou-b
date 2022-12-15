@@ -34,6 +34,7 @@ func main() {
 
 	r := gin.Default()
 	r.LoadHTMLGlob("api/view/*html")
+
 	r.Use(cors.New(cors.Config{
 		// アクセスを許可したいアクセス元
 		AllowOrigins: []string{
@@ -82,11 +83,11 @@ func main() {
 	r.GET("/", keywordController.Index)
 	r.GET("/keywords", keywordController.GetAllKeywordsGin)
 	// list one keyword
-	r.GET("/keywords/:id", keywordController.GetKeyword)
+	r.GET("/keywords/:id", keywordController.DetailKeyword)
 	// create a new keyword
-	r.POST("/keyword/create/:word", keywordController.CreateKeyword)
-	r.POST("/keyword/update/:id", keywordController.UpdateKeyword)
-	r.DELETE("/keyword/delete/:id", keywordController.DeleteKeyword)
+	r.POST("/keyword/create/", keywordController.CreateKeyword)
+	r.POST("/keyword/update/", keywordController.UpdateKeyword)
+	r.POST("/keyword/delete", keywordController.DeleteKeyword)
 	r.GET("/message", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello world",

@@ -20,7 +20,7 @@ func NewKeywordPersistance(conn *gorm.DB) repository.KeywordRepository {
 func (kp *keywordPersistance) GetKeyword(id string) (result *keyword.Keyword, err error) {
 
 	var keyword dto.Keyword
-	if result := kp.Conn.Where("keyword_id = ?", id).First(&keyword, id); result.Error != nil {
+	if result := kp.Conn.Where("keyword_id = ?", id).First(&keyword); result.Error != nil {
 		err := result.Error
 		return nil, err
 	}
@@ -66,10 +66,12 @@ func (kp *keywordPersistance) Create(k *keyword.Keyword) error {
 func (kp *keywordPersistance) Update(k *keyword.Keyword) error {
 
 	converted_keyword := dto.ConvertKeyword(k)
-	if result := kp.Conn.Save(converted_keyword); result.Error != nil {
+
+	if result := kp.Conn.Where("keyword_id = ?", converted_keyword.KeywordId).Updates(converted_keyword); result.Error != nil {
 		err := result.Error
 		return err
 	}
+
 	return nil
 }
 

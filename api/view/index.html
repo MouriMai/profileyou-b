@@ -7,7 +7,7 @@
         <form method="POST" action="/keyword/create">
             <p>ワード： <input type="text" name="word" value="" /></p>
             <p>Description： <input type="text" name="description" value="" /></p>
-            <p>imageUrl： <input type="text" name="imageUrl" value="" /></p>
+            <p>ImageUrl： <input type="text" name="imageUrl" value="" /></p>
             <input type="submit" value="作成" /> 
         </form>
         <hr>
@@ -17,6 +17,7 @@
                     <td><a href="/keywords/{{.KeywordId}}">{{.KeywordId}}</a></td>
                     <td>{{.Word}}</td>
                     <td>{{.Description}}</td>
+                    <td>{{.ImageUrl}}</td>
                 </tr>
             {{ end }}
         </table>
